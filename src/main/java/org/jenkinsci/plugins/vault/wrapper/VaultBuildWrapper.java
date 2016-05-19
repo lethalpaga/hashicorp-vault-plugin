@@ -17,11 +17,42 @@ import org.jenkinsci.plugins.vault.api.VaultApi;
 import org.jenkinsci.plugins.vault.api.VaultApiFactory;
 import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 public class VaultBuildWrapper extends SimpleBuildWrapper {
     
-    private VaultApi vaultApi;
+    private transient VaultApi vaultApi;
+    private String secretPath;
+    private String envVariable;
+    private VaultServerConfigImpl vaultConfig;
     
+    public VaultServerConfigImpl getVaultConfig() {
+        return vaultConfig;
+    }
+    
+    @DataBoundSetter
+    public void setVaultConfig(VaultServerConfigImpl value) {
+        this.vaultConfig = value;
+    }
+    
+    public String getSecretPath() {
+        return secretPath;
+    }
+    
+    @DataBoundSetter
+    public void setSecretPath(String value) {
+        this.secretPath = value;
+    }
+
+    public String getEnvVariable() {
+        return envVariable;
+    }
+    
+    @DataBoundSetter
+    public void setEnvVariable(String value) {
+        this.envVariable = value;
+    }
+
     @Override
     public void makeSensitiveBuildVariables(AbstractBuild build,
                                Set<String> sensitiveVariables) {
@@ -38,22 +69,17 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
                     throws IOException,
                            InterruptedException {
         context.env("VAULT_TOKEN", "abcdefg");
-        context.env("VAULT_ADDR", "http://test.com");
-        String secret = vaultApi.readField("secret/test", "value");
-        context.env("VAULT_SECRET", secret);
-
+        context.env("VAULT_ADDR", vaultApi.getUrl());
+        String secret = vaultApi.readField(secretPath, "value");
+        context.env(envVariable, secret);
     }
     
     @DataBoundConstructor
-    public VaultBuildWrapper() {
-        VaultServerConfig config = getVaultServerConfig();
-        this.vaultApi = VaultApiFactory.create(config);
+    public VaultBuildWrapper(VaultServerConfigImpl vaultConfig) {
+        this.vaultApi = VaultApiFactory.create(vaultConfig);
+        this.vaultConfig = vaultConfig;
     }
-    
-    private VaultServerConfig getVaultServerConfig() {
-        return new VaultServerConfigImpl("", "http://localhost:8200", "ed604738-ecdb-6b4c-ec41-f0ee6d3c58f2");
-    }
-    
+        
     @Extension public static class DescriptorImpl extends BuildWrapperDescriptor {
 
         @Override public String getDisplayName() {

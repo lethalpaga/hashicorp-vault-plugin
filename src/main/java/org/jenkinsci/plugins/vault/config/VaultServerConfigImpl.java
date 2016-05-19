@@ -25,27 +25,29 @@ package org.jenkinsci.plugins.vault.config;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.XmlFile;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import java.io.IOException;
-import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.DataBoundSetter;
 
 /**
  * Vault server configuration
  */
 public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerConfigImpl> implements VaultServerConfig {
     
-    public final String name;
-    public final String url;
-    public final String token;
+    private String name;
+    private String url;
+    private String token;
     
     @Override
     public String getUrl() {
         return this.url;
+    }
+    
+    @DataBoundSetter
+    public void setUrl(String value) {
+        this.url = value;
     }
     
     @Override
@@ -53,10 +55,19 @@ public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerCo
         return this.token;
     }
 
+    @DataBoundSetter
+    public void setToken(String value) {
+        this.token = value;
+    }
+    
     @Override
     public String getName() {
         return this.name;
-
+    }
+    
+    @DataBoundSetter
+    public void setName(String value) {
+        this.name = value;
     }
     
     @DataBoundConstructor
@@ -68,45 +79,9 @@ public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerCo
 
     @Extension
     public static class DescriptorImpl extends Descriptor<VaultServerConfigImpl> {
-
         @Override
         public String getDisplayName() {
             return "Vault Server";
-        }
-
-        public final String name;
-        public final String url;
-        public final String token;
-
-        public String getUrl() {
-            return this.url;
-        }
-
-        public String getToken() {
-            return this.token;
-        }
-
-        public String getName() {
-            return this.name;
-
-        }
-
-        public DescriptorImpl() throws IOException {
-            this.name = "Vault Server";
-            this.url = "vault.example.com";
-            this.token = null;
-
-            XmlFile xml = getConfigFile();
-            if (xml.exists()) {
-                xml.unmarshal(this);
-            }
-        }
-
-        @Override
-        public boolean configure(StaplerRequest req, JSONObject json) throws Descriptor.FormException {
-            req.bindJSON(this, json.getJSONObject("vault-server"));
-            save();
-            return true;
         }
     }
 }

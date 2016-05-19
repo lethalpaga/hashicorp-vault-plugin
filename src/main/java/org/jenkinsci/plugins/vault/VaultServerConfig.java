@@ -23,6 +23,11 @@
  */
 package org.jenkinsci.plugins.vault;
 
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.Util;
+import org.jenkinsci.plugins.vault.VaultCredentials.NameProvider;
+
 /**
  * Vault server configuration
  */

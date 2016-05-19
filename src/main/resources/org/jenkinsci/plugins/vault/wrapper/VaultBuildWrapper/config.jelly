@@ -20,5 +20,13 @@ THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
-    
+    <f:entry title="${%Path to secret}" field="secretPath">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="${%Environment variable to set}" field="envVariable">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Vault configuration">
+        <f:optionalProperty field="vaultConfig" title="Manual configuration"/>
+    </f:entry>
 </j:jelly>
