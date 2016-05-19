@@ -12,10 +12,15 @@ import hudson.tasks.BuildWrapperDescriptor;
 import java.io.IOException;
 import java.util.Set;
 import jenkins.tasks.SimpleBuildWrapper;
+import org.jenkinsci.plugins.vault.VaultServerConfig;
+import org.jenkinsci.plugins.vault.api.VaultApi;
+import org.jenkinsci.plugins.vault.api.VaultApiFactory;
+import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
 
 public class VaultBuildWrapper extends SimpleBuildWrapper {
+    
+    private VaultApi vaultApi;
     
     @Override
     public void makeSensitiveBuildVariables(AbstractBuild build,
@@ -34,11 +39,19 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
                            InterruptedException {
         context.env("VAULT_TOKEN", "abcdefg");
         context.env("VAULT_ADDR", "http://test.com");
+        String secret = vaultApi.readField("secret/test", "value");
+        context.env("VAULT_SECRET", secret);
 
     }
     
     @DataBoundConstructor
     public VaultBuildWrapper() {
+        VaultServerConfig config = getVaultServerConfig();
+        this.vaultApi = VaultApiFactory.create(config);
+    }
+    
+    private VaultServerConfig getVaultServerConfig() {
+        return new VaultServerConfigImpl("", "http://localhost:8200", "ed604738-ecdb-6b4c-ec41-f0ee6d3c58f2");
     }
     
     @Extension public static class DescriptorImpl extends BuildWrapperDescriptor {
