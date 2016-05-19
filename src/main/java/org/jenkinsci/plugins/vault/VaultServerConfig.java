@@ -21,47 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.vault.config;
-
-import edu.umd.cs.findbugs.annotations.NonNull;
-import hudson.Extension;
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.Descriptor;
-import hudson.util.Secret;
-import org.kohsuke.stapler.DataBoundConstructor;
+package org.jenkinsci.plugins.vault;
 
 /**
  * Vault server configuration
  */
-public class VaultServerConfig extends AbstractDescribableImpl<VaultServerConfig> {
-    public final String name;
-    public final String url;
-    public final String token;
-    
-    public String getUrl() {
-        return this.url;
-    }
-    
-    public String getToken() {
-        return this.token;
-    }
-    
-    public String getName() {
-        return this.name;
-    }
-    
-    @DataBoundConstructor
-    public VaultServerConfig(@NonNull String name, @NonNull String url, String token) {
-        this.name = name;
-        this.url = url;
-        this.token = token;
-    }
-    
-    @Extension
-    public static class DescriptorImpl extends Descriptor<VaultServerConfig> {
-        @Override
-        public String getDisplayName() {
-            return "Vault Server";
-        }
-    }
+public interface VaultServerConfig {
+    public abstract String getUrl();
+    public abstract String getToken();
+    public abstract String getName();
 }

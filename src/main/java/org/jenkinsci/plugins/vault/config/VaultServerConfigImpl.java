@@ -23,70 +23,90 @@
  */
 package org.jenkinsci.plugins.vault.config;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.ExtensionPoint;
+import hudson.XmlFile;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Vault server configuration
  */
-public final class VaultGlobalConfig extends AbstractDescribableImpl<VaultGlobalConfig> implements ExtensionPoint {
+public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerConfigImpl> implements VaultServerConfig {
+    
+    public final String name;
+    public final String url;
+    public final String token;
+    
+    @Override
+    public String getUrl() {
+        return this.url;
+    }
+    
+    @Override
+    public String getToken() {
+        return this.token;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+
+    }
+    
+    @DataBoundConstructor
+    public VaultServerConfigImpl(@NonNull String name, @NonNull String url, String token) {
+        this.name = name;
+        this.url = url;
+        this.token = token;
+    }
+
     @Extension
-    public static class DescriptorImpl extends Descriptor<VaultGlobalConfig> {
+    public static class DescriptorImpl extends Descriptor<VaultServerConfigImpl> {
 
         @Override
         public String getDisplayName() {
-            return "Hashicorp Vault";
-        }
-        
-        public List<VaultServerConfig> vaults = new ArrayList<>();
-        public Boolean installVault;
-
-        public List<VaultServerConfig> getVaults() {
-            return Collections.unmodifiableList(this.vaults);
-        }
-        
-        public void setVaults(List<VaultServerConfig> value) {
-            this.vaults = new ArrayList<>(value);
+            return "Vault Server";
         }
 
-        public Boolean getInstallVault() {
-            return this.installVault;
-        }
-        
-        public void setInstallVault(Boolean value) {
-            this.installVault = value;
+        public final String name;
+        public final String url;
+        public final String token;
+
+        public String getUrl() {
+            return this.url;
         }
 
-        /*@Override
-        public final XmlFile getConfigFile() {
-            return new XmlFile(new File(Jenkins.getInstance().getRootDir(), "hashicorp.vault.xml"));
+        public String getToken() {
+            return this.token;
+        }
+
+        public String getName() {
+            return this.name;
+
         }
 
         public DescriptorImpl() throws IOException {
-            this.installVault = true;
+            this.name = "Vault Server";
+            this.url = "vault.example.com";
+            this.token = null;
 
             XmlFile xml = getConfigFile();
             if (xml.exists()) {
                 xml.unmarshal(this);
             }
         }
- 
+
         @Override
         public boolean configure(StaplerRequest req, JSONObject json) throws Descriptor.FormException {
-            req.bindJSON(this, json.getJSONObject("vault"));
+            req.bindJSON(this, json.getJSONObject("vault-server"));
             save();
             return true;
         }
-        
-        public List<Descriptor> getVaultDescriptors() {
-            Jenkins jenkins = Jenkins.getInstance();
-            return ImmutableList.of(jenkins.getDescriptor(VaultServerConfig.class));
-        }*/
-     }
+    }
 }

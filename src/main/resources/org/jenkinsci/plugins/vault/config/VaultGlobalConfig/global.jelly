@@ -24,8 +24,8 @@ THE SOFTWARE.
         <f:entry title="${%Install Vault}" field="installVault">
             <f:checkbox/>
         </f:entry>
-<!--        <f:entry title="Servers">
-            <f:hetero-list field="vaults" descriptors="${descriptor.vaultDescriptors}" hasHeaders="false" addCaption="${%Add vault}"/>
-        </f:entry>-->
+        <f:entry title="Servers">
+            <f:repeatableHeteroProperty field="vaults"/>
+        </f:entry>
     </f:section>
 </j:jelly>
