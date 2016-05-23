@@ -26,7 +26,7 @@ THE SOFTWARE.
     <f:entry title="${%Vault URL}" field="url">
         <f:textbox/>
     </f:entry>
-    <f:entry title="${%Token}" field="token">
-        <f:textbox/>
+    <f:entry title="${%Credentials}" field="credId">
+        <f:select/>
     </f:entry>
 </j:jelly>

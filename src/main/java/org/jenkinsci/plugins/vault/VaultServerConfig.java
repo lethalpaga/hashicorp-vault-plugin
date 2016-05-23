@@ -23,16 +23,14 @@
  */
 package org.jenkinsci.plugins.vault;
 
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import hudson.Util;
-import org.jenkinsci.plugins.vault.VaultCredentials.NameProvider;
+import hudson.model.Run;
+import hudson.util.Secret;
 
 /**
  * Vault server configuration
  */
 public interface VaultServerConfig {
     public abstract String getUrl();
-    public abstract String getToken();
+    public abstract VaultCredentials getCredentials(Run<?,?> build);
     public abstract String getName();
 }

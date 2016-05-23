@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.vault.api;
 
+import hudson.model.Run;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
 
 /**
@@ -30,7 +31,7 @@ import org.jenkinsci.plugins.vault.VaultServerConfig;
  * @author lethalpaga
  */
 public class VaultApiFactory {
-    public static VaultApi create(VaultServerConfig config) {
-        return new VaultApiImpl(config);
+    public static VaultApi create(VaultServerConfig config, Run<?,?> build) {
+        return new VaultApiImpl(config, build);
     }
 }

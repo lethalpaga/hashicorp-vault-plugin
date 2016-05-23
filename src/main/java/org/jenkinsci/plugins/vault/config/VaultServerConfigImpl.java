@@ -23,10 +23,15 @@
  */
 package org.jenkinsci.plugins.vault.config;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
+import hudson.model.Run;
+import hudson.util.ListBoxModel;
+import java.util.List;
+import org.jenkinsci.plugins.vault.VaultCredentials;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -38,7 +43,7 @@ public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerCo
     
     private String name;
     private String url;
-    private String token;
+    private String credId;
     
     @Override
     public String getUrl() {
@@ -50,16 +55,21 @@ public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerCo
         this.url = value;
     }
     
-    @Override
-    public String getToken() {
-        return this.token;
-    }
-
-    @DataBoundSetter
-    public void setToken(String value) {
-        this.token = value;
+    public String getCredId() {
+        return this.credId;
     }
     
+    @DataBoundSetter
+    public void setCredId(String value) {
+        this.credId = value;
+    }
+    
+    @Override
+    public VaultCredentials getCredentials(Run<?,?> build) {
+        VaultCredentials cred = CredentialsProvider.findCredentialById(this.credId, VaultCredentials.class, build);
+        return cred;
+    }
+
     @Override
     public String getName() {
         return this.name;
@@ -71,10 +81,10 @@ public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerCo
     }
     
     @DataBoundConstructor
-    public VaultServerConfigImpl(@NonNull String name, @NonNull String url, String token) {
+    public VaultServerConfigImpl(@NonNull String name, @NonNull String url, @NonNull String credId) {
         this.name = name;
         this.url = url;
-        this.token = token;
+        this.credId = credId;
     }
 
     @Extension
@@ -82,6 +92,17 @@ public class VaultServerConfigImpl extends AbstractDescribableImpl<VaultServerCo
         @Override
         public String getDisplayName() {
             return "Vault Server";
+        }
+        
+        public ListBoxModel doFillCredIdItems() {
+            ListBoxModel model = new ListBoxModel();
+            
+            List<VaultCredentials> creds = CredentialsProvider.lookupCredentials(VaultCredentials.class);
+            for(VaultCredentials cred: creds) {
+              model.add(cred.getDescription(), cred.getId());
+            }
+            
+            return model;
         }
     }
 }

@@ -26,6 +26,7 @@ package org.jenkinsci.plugins.vault.api;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
+import hudson.model.Run;
 import java.util.Map;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
 
@@ -37,9 +38,9 @@ public class VaultApiImpl implements VaultApi {
     private VaultConfig config;
     private Vault vault;
     
-    public VaultApiImpl(VaultServerConfig configParams) {
+    public VaultApiImpl(VaultServerConfig configParams, Run<?,?> build) {
         try {
-            this.config = new VaultConfig().address(configParams.getUrl()).token(configParams.getToken()).build();
+            this.config = new VaultConfig().address(configParams.getUrl()).token(configParams.getCredentials(build).getToken().getPlainText()).build();
         }
         catch(VaultException e) {
             // TODO do someething!
@@ -64,6 +65,11 @@ public class VaultApiImpl implements VaultApi {
     @Override
     public Boolean hasToken() {
         return config.getToken() == null;
+    }
+    
+    @Override
+    public String getToken() {
+        return config.getToken();
     }
     
     @Override

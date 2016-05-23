@@ -12,7 +12,6 @@ import hudson.tasks.BuildWrapperDescriptor;
 import java.io.IOException;
 import java.util.Set;
 import jenkins.tasks.SimpleBuildWrapper;
-import org.jenkinsci.plugins.vault.VaultServerConfig;
 import org.jenkinsci.plugins.vault.api.VaultApi;
 import org.jenkinsci.plugins.vault.api.VaultApiFactory;
 import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
@@ -68,7 +67,9 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
          EnvVars initialEnvironment)
                     throws IOException,
                            InterruptedException {
-        context.env("VAULT_TOKEN", "abcdefg");
+        this.vaultApi = VaultApiFactory.create(vaultConfig, build);
+
+        context.env("VAULT_TOKEN", vaultApi.getToken());
         context.env("VAULT_ADDR", vaultApi.getUrl());
         String secret = vaultApi.readField(secretPath, "value");
         context.env(envVariable, secret);
@@ -76,7 +77,6 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
     
     @DataBoundConstructor
     public VaultBuildWrapper(VaultServerConfigImpl vaultConfig) {
-        this.vaultApi = VaultApiFactory.create(vaultConfig);
         this.vaultConfig = vaultConfig;
     }
         

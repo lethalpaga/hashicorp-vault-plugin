@@ -22,6 +22,12 @@ public interface VaultApi {
      public Boolean hasToken();
      
      /**
+      * Returns the token value
+      * @return Value for the token
+      */
+     public String getToken();
+     
+     /**
       * Sets the Authentication token.
       * See the auth* method to get a new token
       * @param value 

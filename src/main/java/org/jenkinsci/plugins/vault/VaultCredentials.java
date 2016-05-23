@@ -28,6 +28,7 @@ import com.cloudbees.plugins.credentials.CredentialsNameProvider;
 import com.cloudbees.plugins.credentials.NameWith;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.Util;
+import hudson.model.Descriptor;
 import hudson.util.Secret;
 import javax.annotation.Nonnull;
 
@@ -41,13 +42,7 @@ public interface VaultCredentials extends StandardCredentials {
      * Returns the wrapped secret value.
      * @return the encrypted value
      */
-    @Nonnull Secret getSecret();
-    
-    /**
-     * Returns the vault Url. Can be null
-     * @return URL to the vault server
-     */
-    String getVaultUrl();
+    @Nonnull Secret getToken();
 
     class NameProvider extends CredentialsNameProvider<VaultCredentials> {
 
@@ -55,7 +50,5 @@ public interface VaultCredentials extends StandardCredentials {
             String description = Util.fixEmptyAndTrim(c.getDescription());
             return Messages.VaultCredentials_description() + (description != null ? " (" + description + ")" : "");
         }
-
     }
-
 }

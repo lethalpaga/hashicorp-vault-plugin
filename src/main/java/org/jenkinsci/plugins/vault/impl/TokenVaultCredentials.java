@@ -35,29 +35,22 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class VaultCredentialsImpl extends BaseStandardCredentials implements VaultCredentials {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VaultCredentialsImpl.class);
+public final class TokenVaultCredentials extends BaseStandardCredentials implements VaultCredentials {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenVaultCredentials.class);
 
-    private final @Nonnull Secret secret;
-    private final @Nonnull String vaultUrl;
+    private final @Nonnull Secret token;
 
-    @DataBoundConstructor public VaultCredentialsImpl(@CheckForNull CredentialsScope scope, @CheckForNull String id, @CheckForNull String description, @Nonnull Secret secret, String vaultUrl) {
+    @DataBoundConstructor public TokenVaultCredentials(@CheckForNull CredentialsScope scope, @CheckForNull String id, @CheckForNull String description, @Nonnull Secret token) {
         super(scope, id, description);
         LOGGER.info("Retrieval creds for vault");
-        this.secret = secret;
-        this.vaultUrl = vaultUrl;
+        this.token = token;
     }
 
     @Override
-    public Secret getSecret() {
-        return secret;
+    public Secret getToken() {
+        return token;
     }
     
-    @Override
-    public String getVaultUrl() {
-        return vaultUrl;
-    }
-
     @Extension public static class DescriptorImpl extends BaseStandardCredentialsDescriptor {
 
         @Override public String getDisplayName() {
