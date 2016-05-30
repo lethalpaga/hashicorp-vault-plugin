@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.jenkinsci.plugins.vault.impl;
+package org.jenkinsci.plugins.vault.secretcredentialsimpl;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
@@ -30,33 +30,35 @@ import hudson.Extension;
 import hudson.util.Secret;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import org.jenkinsci.plugins.vault.VaultCredentials;
+import org.jenkinsci.plugins.vault.SecretCredentials;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class TokenVaultCredentials extends BaseStandardCredentials implements VaultCredentials {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TokenVaultCredentials.class);
+public final class SecretVaultCredentials extends BaseStandardCredentials implements SecretCredentials {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecretVaultCredentials.class);
 
-    private final @Nonnull Secret token;
+    private @Nonnull Secret secretPath;
 
-    @DataBoundConstructor public TokenVaultCredentials(@CheckForNull CredentialsScope scope, @CheckForNull String id, @CheckForNull String description, @Nonnull Secret token) {
+    @DataBoundConstructor public SecretVaultCredentials(@CheckForNull CredentialsScope scope, @CheckForNull String id, @CheckForNull String description, @Nonnull Secret secretPath) {
         super(scope, id, description);
-        LOGGER.info("Retrieval creds for vault");
-        this.token = token;
+        LOGGER.info("Retrieving creds for vault");
+        this.secretPath = secretPath;
     }
 
-    @Override
-    public Secret getToken() {
-        return token;
+    public Secret getSecretPath() {
+        return secretPath;
     }
+
+    @DataBoundSetter
+    public void setSecretPath(Secret secretPath) { this.secretPath = secretPath; }
     
     @Extension public static class DescriptorImpl extends BaseStandardCredentialsDescriptor {
 
         @Override public String getDisplayName() {
-            return Messages.VaultCredentialsImpl_description();
+            return "Vault secret";
         }
-
     }
 
 }

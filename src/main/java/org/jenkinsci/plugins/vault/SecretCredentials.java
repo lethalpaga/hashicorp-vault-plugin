@@ -28,27 +28,27 @@ import com.cloudbees.plugins.credentials.CredentialsNameProvider;
 import com.cloudbees.plugins.credentials.NameWith;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.Util;
-import hudson.model.Descriptor;
 import hudson.util.Secret;
+
 import javax.annotation.Nonnull;
 
 /**
- * Credentials to authenticate with vault. They all resolve to a token
+ * Secret to retrieve from a Vault
  */
-@NameWith(VaultCredentials.NameProvider.class)
-public interface VaultCredentials extends StandardCredentials {
+@NameWith(SecretCredentials.NameProvider.class)
+public interface SecretCredentials extends StandardCredentials {
 
     /**
-     * Returns the vault token from an authentication backend
+     * Returns the wrapped secret value.
      * @return the encrypted value
      */
-    @Nonnull Secret getToken();
+    @Nonnull Secret getSecretPath();
 
-    class NameProvider extends CredentialsNameProvider<VaultCredentials> {
+    class NameProvider extends CredentialsNameProvider<SecretCredentials> {
 
-        @Override public String getName(VaultCredentials c) {
+        @Override public String getName(SecretCredentials c) {
             String description = Util.fixEmptyAndTrim(c.getDescription());
-            return "Vault credentials" + (description != null ? " (" + description + ")" : "");
+            return "Vault secret" + (description != null ? " (" + description + ")" : "");
         }
     }
 }
