@@ -29,7 +29,8 @@ import com.bettercloud.vault.VaultException;
 import hudson.model.Run;
 import java.util.Map;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * Implementation using vault-java-driver
@@ -37,51 +38,53 @@ import org.jenkinsci.plugins.vault.VaultServerConfig;
 public class VaultApiImpl implements VaultApi {
     private VaultConfig config;
     private Vault vault;
-    
+
+    private final static Logger LOG = Logger.getLogger(VaultApiImpl.class.getName());
+
     public VaultApiImpl(VaultServerConfig configParams, Run<?,?> build) {
         try {
             this.config = new VaultConfig().address(configParams.getUrl()).token(configParams.getCredentials(build).getToken().getPlainText()).build();
         }
         catch(VaultException e) {
-            // TODO do someething!
+            printLog("Failed to create the vault object for " + configParams.getUrl() + ": " + e.getMessage());
         }
     }
-    
+
     @Override
     public String getUrl() {
         return config.getAddress();
     }
-    
+
     @Override
     public void setUrl(String value) {
         try {
             config.address(value).build();
         }
         catch(VaultException e) {
-            // TODO log a message
+            printLog("Vault: error building URL for " + value + ": " + e.getMessage());
         }
     }
-     
+
     @Override
     public Boolean hasToken() {
         return config.getToken() == null;
     }
-    
+
     @Override
     public String getToken() {
         return config.getToken();
     }
-    
+
     @Override
     public void setToken(String value) {
         config.token(value);
     }
-     
+
     @Override
     public String getSslPemFile() {
         return config.getSslPemUTF8();
     }
-    
+
     @Override
     public void setSslPemFile(String value) {
         config.sslPemUTF8(value);
@@ -90,40 +93,46 @@ public class VaultApiImpl implements VaultApi {
     @Override
     public Boolean getSslVerify() {
         return config.isSslVerify();
-    }    
+    }
 
     @Override
     public void setSslVerify(Boolean value) {
         config.sslVerify(value);
     }
-    
+
     @Override
     public Map<String, String> read(String secret) {
+        printLog("Reading secret " + secret);
+
         try {
           return getVault().logical().read(secret).getData();
         }
         catch(VaultException e) {
-            // TODO log message
+            String message = "Failed to read path " + secret + " from " + config.getAddress() + ": " + e.getMessage();
+            printLog(message);
             return null;
         }
     }
-    
+
     @Override
     public String readField(String secret, String field) {
-        try {
-          return getVault().logical().read(secret).getData().get(field);
-        }
-        catch(VaultException e) {
-            // TODO log message
-            return null;
-        }
+        return read(secret).get(field);
     }
-    
+
     private Vault getVault() {
         if(vault == null) {
             vault = new Vault(config);
         }
-        
+
         return vault;
+    }
+
+    private void printLog(String message, Level level) {
+        System.out.println(message);
+        LOG.log(level, message);
+    }
+
+    private void printLog(String message) {
+        printLog(message, Level.INFO);
     }
 }

@@ -10,6 +10,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildWrapperDescriptor;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import jenkins.tasks.SimpleBuildWrapper;
 import org.jenkinsci.plugins.vault.api.VaultApi;
@@ -17,6 +18,7 @@ import org.jenkinsci.plugins.vault.api.VaultApiFactory;
 import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.json.JSONObject;
 
 public class VaultBuildWrapper extends SimpleBuildWrapper {
     
@@ -71,8 +73,9 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
 
         context.env("VAULT_TOKEN", vaultApi.getToken());
         context.env("VAULT_ADDR", vaultApi.getUrl());
-        String secret = vaultApi.readField(secretPath, "value");
-        context.env(envVariable, secret);
+        JSONObject secret = new JSONObject(vaultApi.read(secretPath));
+
+        context.env(envVariable, secret.toString());
     }
     
     @DataBoundConstructor
