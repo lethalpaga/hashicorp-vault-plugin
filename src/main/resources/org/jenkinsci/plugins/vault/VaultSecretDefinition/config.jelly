@@ -19,14 +19,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials">
-    <f:entry title="${%Vault server}" field="vaultConfig">
-        <f:property/>
-    </f:entry>
-    <f:entry title="${%Field from secret}" field="secretField">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
+    <f:entry title="${%Environment variable}" field="envVariable">
         <f:textbox/>
     </f:entry>
-    <f:entry title="${%Variable}" field="variable">
+    <f:entry title="${%Secret field}" field="secretField">
         <f:textbox/>
     </f:entry>
 </j:jelly>

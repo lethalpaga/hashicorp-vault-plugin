@@ -23,10 +23,7 @@ THE SOFTWARE.
     <f:entry title="${%Vault server}" field="vaultConfig">
         <f:property/>
     </f:entry>
-    <f:entry title="${%Field from secret}" field="secretField">
-        <f:textbox/>
-    </f:entry>
-    <f:entry title="${%Variable}" field="variable">
-        <f:textbox/>
+    <f:entry title="Variable-Secret field bindings">
+        <f:repeatableHeteroProperty field="secrets"/>
     </f:entry>
 </j:jelly>

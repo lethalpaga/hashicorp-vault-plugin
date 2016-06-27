@@ -21,25 +21,25 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.json.JSONObject;
 
 public class VaultBuildWrapper extends SimpleBuildWrapper {
-    
+
     private transient VaultApi vaultApi;
     private String secretPath;
     private String envVariable;
     private VaultServerConfigImpl vaultConfig;
-    
+
     public VaultServerConfigImpl getVaultConfig() {
         return vaultConfig;
     }
-    
+
     @DataBoundSetter
     public void setVaultConfig(VaultServerConfigImpl value) {
         this.vaultConfig = value;
     }
-    
+
     public String getSecretPath() {
         return secretPath;
     }
-    
+
     @DataBoundSetter
     public void setSecretPath(String value) {
         this.secretPath = value;
@@ -48,7 +48,7 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
     public String getEnvVariable() {
         return envVariable;
     }
-    
+
     @DataBoundSetter
     public void setEnvVariable(String value) {
         this.envVariable = value;
@@ -59,7 +59,7 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
                                Set<String> sensitiveVariables) {
         sensitiveVariables.add("VAULT_TOKEN");
     }
-    
+
     @Override
     public void setUp(SimpleBuildWrapper.Context context,
          Run<?,?> build,
@@ -77,18 +77,18 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
 
         context.env(envVariable, secret.toString());
     }
-    
+
     @DataBoundConstructor
     public VaultBuildWrapper(VaultServerConfigImpl vaultConfig) {
         this.vaultConfig = vaultConfig;
     }
-        
+
     @Extension public static class DescriptorImpl extends BuildWrapperDescriptor {
 
         @Override public String getDisplayName() {
             return "Use Vault";
         }
-        
+
         @Override
         public boolean isApplicable(AbstractProject<?,?> item) {
             return true; // This applies
