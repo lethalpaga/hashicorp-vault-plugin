@@ -54,6 +54,9 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
         this.envVariable = value;
     }
 
+    // package-private method used for unit tests only
+    void setVaultApi(VaultApi value) { this.vaultApi = value; }
+
     @Override
     public void makeSensitiveBuildVariables(AbstractBuild build,
                                Set<String> sensitiveVariables) {
@@ -69,10 +72,10 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
          EnvVars initialEnvironment)
                     throws IOException,
                            InterruptedException {
-        this.vaultApi = VaultApiFactory.create(vaultConfig, build);
+        if (vaultApi == null) {
+            this.vaultApi = VaultApiFactory.create(vaultConfig, build);
+        }
 
-        context.env("VAULT_TOKEN", vaultApi.getToken());
-        context.env("VAULT_ADDR", vaultApi.getUrl());
         JSONObject secret = new JSONObject(vaultApi.read(secretPath));
 
         context.env(envVariable, secret.toString());
