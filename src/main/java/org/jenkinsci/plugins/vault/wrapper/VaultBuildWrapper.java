@@ -19,6 +19,7 @@ import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.json.JSONObject;
+import com.bettercloud.vault.VaultException;
 
 public class VaultBuildWrapper extends SimpleBuildWrapper {
 
@@ -76,7 +77,13 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
             this.vaultApi = VaultApiFactory.create(vaultConfig, build);
         }
 
-        JSONObject secret = new JSONObject(vaultApi.read(secretPath));
+        JSONObject secret;
+        try {
+            secret = new JSONObject(vaultApi.read(secretPath));
+        }
+        catch(VaultException e) {
+          throw new IOException(e.getMessage());
+        }
 
         context.env(envVariable, secret.toString());
     }

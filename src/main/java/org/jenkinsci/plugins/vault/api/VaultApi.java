@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.vault.api;
 
+import com.bettercloud.vault.VaultException;
 import java.util.Map;
 
 public interface VaultApi {
@@ -12,7 +13,7 @@ public interface VaultApi {
       * Sets the URL to the Vault server
       * @param value URL to the Vault Server
       */
-     public void setUrl(String value);
+     public void setUrl(String value) throws VaultException;
 
      /**
       * Indicates if a valid token is configured.
@@ -63,7 +64,7 @@ public interface VaultApi {
       * @param secret Path to the secret
       * @return Hash of all fields contained in the secret
       */
-     public Map<String, String> read(String secret);
+     public Map<String, String> read(String secret) throws VaultException;
 
      /**
       * Reads a specific field from a secret in vault
@@ -71,5 +72,5 @@ public interface VaultApi {
       * @param field Field to read
       * @return Secret value
       */
-     public String readField(String secret, String field);
+     public String readField(String secret, String field) throws VaultException;
 }

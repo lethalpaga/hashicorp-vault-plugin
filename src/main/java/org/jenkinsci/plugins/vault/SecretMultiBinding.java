@@ -14,6 +14,7 @@ import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import com.bettercloud.vault.VaultException;
 import java.util.*;
 
 import java.io.IOException;
@@ -59,13 +60,20 @@ public class SecretMultiBinding extends MultiBinding<SecretCredentials> {
         String secretPath = getCredentials(build).getSecretPath().getPlainText();
         VaultApi vaultApi = VaultApiFactory.create(vaultConfig, build);
 
-        Map<String, String> secretStruct = vaultApi.read(secretPath);
-
         Map<String,String> m = new HashMap<>();
-        for(VaultSecretDefinition secret: secrets) {
-          String secretValue = secretStruct.get(secret.getSecretField());
-          m.put(secret.getEnvVariable(), secretValue);
+
+        try {
+            Map<String, String> secretStruct = vaultApi.read(secretPath);
+
+            for(VaultSecretDefinition secret: secrets) {
+              String secretValue = secretStruct.get(secret.getSecretField());
+              m.put(secret.getEnvVariable(), secretValue);
+            }
         }
+        catch(VaultException e) {
+          throw new IOException(e.getMessage());
+        }
+
         return new Binding.MultiEnvironment(m);
     }
 

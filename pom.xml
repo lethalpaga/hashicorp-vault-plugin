@@ -61,6 +61,6 @@
   <artifactId>hashicorp-vault</artifactId>
   <packaging>hpi</packaging>
   <name>Hashicorp Vault</name>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Vault+Plugin</url>
 </project>

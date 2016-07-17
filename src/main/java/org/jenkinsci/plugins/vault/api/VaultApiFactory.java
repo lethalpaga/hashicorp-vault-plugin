@@ -25,6 +25,7 @@ package org.jenkinsci.plugins.vault.api;
 
 import hudson.model.Run;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
+import com.bettercloud.vault.VaultException;
 
 /**
  *
@@ -32,6 +33,11 @@ import org.jenkinsci.plugins.vault.VaultServerConfig;
  */
 public class VaultApiFactory {
     public static VaultApi create(VaultServerConfig config, Run<?,?> build) {
-        return new VaultApiImpl(config, build);
+        try {
+            return new VaultApiImpl(config, build);
+        }
+        catch(VaultException e) {
+          return null;
+        }
     }
 }

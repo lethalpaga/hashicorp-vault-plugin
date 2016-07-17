@@ -15,6 +15,7 @@ import org.jenkinsci.plugins.vault.config.VaultServerConfigImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import com.bettercloud.vault.VaultException;
 import java.io.IOException;
 
 /**
@@ -55,7 +56,13 @@ public class SecretBinding extends Binding<SecretCredentials> {
     @Override public SingleEnvironment bindSingle(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
         String secretPath = getCredentials(build).getSecretPath().getPlainText();
         VaultApi vaultApi = VaultApiFactory.create(vaultConfig, build);
-        String secretValue = vaultApi.readField(secretPath, secretField);
+        String secretValue;
+        try {
+            secretValue = vaultApi.readField(secretPath, secretField);
+        }
+        catch(VaultException e) {
+          throw new IOException(e.getMessage());
+        }
         return new SingleEnvironment(secretValue);
     }
 

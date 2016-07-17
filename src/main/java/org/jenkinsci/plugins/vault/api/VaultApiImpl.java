@@ -27,6 +27,8 @@ import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
 import hudson.model.Run;
+
+import java.io.Serializable;
 import java.util.Map;
 import org.jenkinsci.plugins.vault.VaultServerConfig;
 import java.util.logging.Level;
@@ -41,13 +43,9 @@ public class VaultApiImpl implements VaultApi {
 
     private final static Logger LOG = Logger.getLogger(VaultApiImpl.class.getName());
 
-    public VaultApiImpl(VaultServerConfig configParams, Run<?,?> build) {
-        try {
-            this.config = new VaultConfig().address(configParams.getUrl()).token(configParams.getCredentials(build).getToken().getPlainText()).build();
-        }
-        catch(VaultException e) {
-            printLog("Failed to create the vault object for " + configParams.getUrl() + ": " + e.getMessage());
-        }
+    public VaultApiImpl(VaultServerConfig configParams, Run<?,?> build) throws VaultException
+{
+        this.config = new VaultConfig().address(configParams.getUrl()).token(configParams.getCredentials(build).getToken().getPlainText()).build();
     }
 
     @Override
@@ -56,13 +54,9 @@ public class VaultApiImpl implements VaultApi {
     }
 
     @Override
-    public void setUrl(String value) {
-        try {
-            config.address(value).build();
-        }
-        catch(VaultException e) {
-            printLog("Vault: error building URL for " + value + ": " + e.getMessage());
-        }
+    public void setUrl(String value) throws VaultException
+    {
+        config.address(value).build();
     }
 
     @Override
@@ -101,21 +95,16 @@ public class VaultApiImpl implements VaultApi {
     }
 
     @Override
-    public Map<String, String> read(String secret) {
+    public Map<String, String> read(String secret) throws VaultException
+    {
         printLog("Reading secret " + secret);
 
-        try {
-          return getVault().logical().read(secret).getData();
-        }
-        catch(VaultException e) {
-            String message = "Failed to read path " + secret + " from " + config.getAddress() + ": " + e.getMessage();
-            printLog(message);
-            return null;
-        }
+        return getVault().logical().read(secret).getData();
     }
 
     @Override
-    public String readField(String secret, String field) {
+    public String readField(String secret, String field) throws VaultException
+    {
         return read(secret).get(field);
     }
 
