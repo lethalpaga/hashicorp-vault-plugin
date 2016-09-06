@@ -15,6 +15,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import com.bettercloud.vault.VaultException;
+
+import java.text.MessageFormat;
 import java.util.*;
 
 import java.io.IOException;
@@ -71,7 +73,8 @@ public class SecretMultiBinding extends MultiBinding<SecretCredentials> {
             }
         }
         catch(VaultException e) {
-          throw new IOException(e.getMessage());
+            String message = MessageFormat.format("Failed to read {0} from {1}: {2}", secretPath, vaultApi.getUrl(), e.getMessage());
+            throw new hudson.AbortException(message);
         }
 
         return new Binding.MultiEnvironment(m);

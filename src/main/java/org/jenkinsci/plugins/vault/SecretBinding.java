@@ -17,6 +17,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 
 import com.bettercloud.vault.VaultException;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 /**
  * Extension for credential-bindings to map a vault secret to an env variable
@@ -61,7 +62,8 @@ public class SecretBinding extends Binding<SecretCredentials> {
             secretValue = vaultApi.readField(secretPath, secretField);
         }
         catch(VaultException e) {
-          throw new IOException(e.getMessage());
+            String message = MessageFormat.format("Failed to read {0} from {1}: {2}", secretPath, vaultApi.getUrl(), e.getMessage());
+            throw new hudson.AbortException(message);
         }
         return new SingleEnvironment(secretValue);
     }

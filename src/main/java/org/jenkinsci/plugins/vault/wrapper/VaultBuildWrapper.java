@@ -10,6 +10,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildWrapperDescriptor;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Set;
 import jenkins.tasks.SimpleBuildWrapper;
@@ -82,7 +83,8 @@ public class VaultBuildWrapper extends SimpleBuildWrapper {
             secret = new JSONObject(vaultApi.read(secretPath));
         }
         catch(VaultException e) {
-          throw new IOException(e.getMessage());
+            String message = MessageFormat.format("Failed to read {0} from {1}: {2}", secretPath, vaultApi.getUrl(), e.getMessage());
+            throw new hudson.AbortException(message);
         }
 
         context.env(envVariable, secret.toString());
